@@ -43,68 +43,53 @@ function formatDate(date) {
   return `${d}.${m}.${y}`;
 }
 
-async function renderPhotos(filter = '') {
-  gallery.innerHTML = '';
+filtered.forEach(p => {
+  const dateObj = new Date(p.uploadTime);
+  const isoString = dateObj.toISOString();
+  const hasTime = !isoString.endsWith('T00:00:00.000Z');
+  const timeText = hasTime
+    ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
+    : '';
 
-  // получаем всю инфу именно с оригиналов
-  const detailedPhotos = await Promise.all(photos.map(getPhotoInfo));
-
-  const filtered = detailedPhotos
-    .filter(p => {
-      const dateObj = new Date(p.uploadTime);
-      return !filter || formatDate(dateObj).startsWith(filter);
-    })
-    .sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime));
-
-  if (filtered.length === 0) {
-    gallery.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
-    return;
+  let infoText = '';
+  if (p.sizeMB && p.resolution) {
+    infoText = `${p.sizeMB} MB ${p.resolution} `;
   }
 
-  filtered.forEach(p => {
-    const dateObj = new Date(p.uploadTime);
-    const isoString = dateObj.toISOString();
-    const hasTime = !isoString.endsWith('T00:00:00.000Z');
-    const timeText = hasTime
-      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
-      : '';
+  const card = document.createElement('div');
+  card.className = 'photo-card';
+  card.innerHTML = `
+    <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
+    <img 
+      src="${p.url.replace('.jpg', '-small.jpg')}" 
+      data-full="${p.url}" 
+      alt="Фото"
+      class="preview"
+      loading="lazy"
+    >
+  `;
 
-    let infoText = '';
-    if (p.sizeMB && p.resolution) {
-      infoText = `${p.sizeMB} MB ${p.resolution} `;
-    }
+  const img = card.querySelector('img');
+  img.onload = () => img.classList.add('loaded');
 
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    card.innerHTML = `
-      <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
-      <img 
-        src="${p.url}" 
-        alt="Фото"
-        class="preview"
-        loading="lazy"
-      >
-    `;
-
-    const img = card.querySelector('img');
-    img.onload = () => img.classList.add('loaded');
-
-    card.onclick = () => openModal(p);
-    gallery.appendChild(card);
-  });
-}
+  card.onclick = () => openModal(p);
+  gallery.appendChild(card);
+});
 
 function openModal(photo) {
   modal.style.display = 'flex';
-  modalImg.src = photo.url.replace('.jpg', '-thumb.jpg'); // сначала миниатюра
 
-  // создаём полную картинку
+  // Сначала маленькая версия
+  modalImg.src = photo.url.replace('.jpg', '-small.jpg');
+
+  // Потом подгружаем оригинал
   const fullImg = new Image();
   fullImg.src = photo.url;
   fullImg.onload = () => {
-    modalImg.src = photo.url; // заменяем на оригинал
+    modalImg.src = photo.url;
   };
 }
+
 
 // Функция для скачивания изображения
 function downloadImage(url, filename) {
