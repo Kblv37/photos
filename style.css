@@ -42,8 +42,8 @@ header {
   height: 36px;
   padding: 0px 14px;
   font-size: 14px;
-  border: none;
   border-radius: 20px;
+  border: none;
   background: #444;
   color: #fff;
   cursor: pointer;
