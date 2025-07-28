@@ -15,14 +15,11 @@ let currentPhoto = null;
 // Функция получения информации о фото
 async function getPhotoInfo(photo) {
   try {
-    // Загружаем файл
     const response = await fetch(photo.url);
     const blob = await response.blob();
 
-    // Получаем размер
     const sizeMB = (blob.size / (1024 * 1024)).toFixed(2);
 
-    // Получаем разрешение
     const img = new Image();
     const imgURL = URL.createObjectURL(blob);
 
@@ -34,9 +31,9 @@ async function getPhotoInfo(photo) {
       };
       img.src = imgURL;
     });
-  } catch (err) {
-    console.error('Ошибка при получении информации:', err);
-    return { ...photo, sizeMB: '—', resolution: '—' };
+  } catch {
+    // Если не удалось получить данные, возвращаем без size/resolution
+    return { ...photo, sizeMB: null, resolution: null };
   }
 }
 
@@ -51,7 +48,6 @@ function formatDate(date) {
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
-  // Сначала достаём инфо для всех фото
   const detailedPhotos = await Promise.all(photos.map(getPhotoInfo));
 
   const filtered = detailedPhotos
@@ -74,12 +70,16 @@ async function renderPhotos(filter = '') {
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
       : '';
 
+    // Формируем строку информации (если данные есть)
+    let infoText = '';
+    if (p.sizeMB && p.resolution && p.sizeMB !== '—' && p.resolution !== '—') {
+      infoText = `${p.sizeMB} MB ${p.resolution} `;
+    }
+
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">
-        [${p.sizeMB} MB | ${p.resolution}] ${formatDate(dateObj)}${timeText}
-      </div>
+      <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
       <img src="${p.url}" alt="Фото">
     `;
     card.onclick = () => openModal(p);
