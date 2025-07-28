@@ -308,3 +308,11 @@ main {
   filter: blur(0);
   transform: scale(1);
 }
+
+.photo-row {
+  margin-bottom: 15px;
+}
+.photo-card {
+  flex: 1;
+  max-width: 250px;
+}
