@@ -17,8 +17,7 @@ async function getPhotoInfo(photo) {
   try {
     const response = await fetch(photo.url);
     const blob = await response.blob();
-
-    const sizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+    const sizeMB = (blob.size / (1024 * 1024)).toFixed(1); // округляем до 0.1 MB
 
     const img = new Image();
     const imgURL = URL.createObjectURL(blob);
@@ -32,7 +31,6 @@ async function getPhotoInfo(photo) {
       img.src = imgURL;
     });
   } catch {
-    // Если не удалось получить данные, возвращаем без size/resolution
     return { ...photo, sizeMB: null, resolution: null };
   }
 }
@@ -48,6 +46,7 @@ function formatDate(date) {
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
+  // получаем всю инфу именно с оригиналов
   const detailedPhotos = await Promise.all(photos.map(getPhotoInfo));
 
   const filtered = detailedPhotos
@@ -69,11 +68,16 @@ async function renderPhotos(filter = '') {
     const timeText = hasTime
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
-  
+
+    let infoText = '';
+    if (p.sizeMB && p.resolution) {
+      infoText = `${p.sizeMB} MB ${p.resolution} `;
+    }
+
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
+      <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
       <img 
         src="${p.url}" 
         alt="Фото"
@@ -81,11 +85,10 @@ async function renderPhotos(filter = '') {
         loading="lazy"
       >
     `;
-  
-    // Добавляем эффект постепенной чёткости
+
     const img = card.querySelector('img');
     img.onload = () => img.classList.add('loaded');
-  
+
     card.onclick = () => openModal(p);
     gallery.appendChild(card);
   });
