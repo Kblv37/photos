@@ -68,9 +68,9 @@ header {
 
 /* Галерея */
 .gallery {
-  column-count: 4;  
-  column-gap: 15px;
-  padding: 20px;
+/*   column-count: 4;  
+  column-gap: 15px; */
+  padding: 10px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -309,15 +309,14 @@ main {
   transform: scale(1);
 }
 
-/* .photo-row {
+.photo-row {
   display: flex;
   gap: 15px;
   margin-bottom: 15px;
-  justify-content: center; /* чтобы строки были по центру */
+  justify-content: center; 
 }
 
 .photo-card {
   flex: 1 1 250px;
   max-width: 250px;
 }
- */
