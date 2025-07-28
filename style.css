@@ -240,3 +240,10 @@ main {
     justify-content: center;
   }
 }
+
+.img-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #eee; /* фон пока фото не загрузилось */
+}
