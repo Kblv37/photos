@@ -108,7 +108,7 @@ async function renderPhotos(filter = '') {
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
-      <div class="skeleton" style="aspect-ratio:4/3; background:#ddd;"></div>
+      <div class="skeleton" style="aspect-ratio:4/3;"></div>
       <div class="progress-circle">
         <svg width="36" height="36">
           <circle r="16" cx="18" cy="18"></circle>
@@ -123,13 +123,12 @@ async function renderPhotos(filter = '') {
     const progressCircle = card.querySelector('.progress-circle');
     const skeleton = card.querySelector('.skeleton');
 
-    // настройки круга
     const radius = 16;
     const circumference = 2 * Math.PI * radius;
     loader.style.strokeDasharray = circumference;
     loader.style.strokeDashoffset = circumference;
 
-    // загружаем с прогрессом
+    // Загружаем фото с прогрессом
     loadImageWithProgress(photo.url, progress => {
       const offset = circumference - progress * circumference;
       loader.style.strokeDashoffset = offset;
@@ -137,28 +136,38 @@ async function renderPhotos(filter = '') {
       const img = new Image();
       img.src = objUrl;
       img.alt = "Фото";
-      img.className = "preview loaded";
+      img.className = "preview";
       img.loading = "lazy";
       img.dataset.full = photo.url;
 
+      // Сразу показываем размытую картину
+      skeleton.replaceWith(img);
+
       img.onload = async () => {
-        skeleton.replaceWith(img);
+        img.classList.add('loaded'); // убираем blur
         progressCircle.remove();
 
         try {
           const response = await fetch(photo.url);
           const blob = await response.blob();
           const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
-          infoBox.textContent = `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+          infoBox.textContent =
+            `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         } catch {
-          infoBox.textContent = `${formatDate(dateObj)}${timeText}`;
+          infoBox.textContent =
+            `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
       };
 
       card.onclick = () => openModal(photo);
+    }).catch(() => {
+      skeleton.style.background = "#999";
+      progressCircle.remove();
+      infoBox.textContent = `Ошибка загрузки ${formatDate(dateObj)}${timeText}`;
     });
   });
 }
+
 
 function openModal(photo) {
   currentPhoto = photo;
