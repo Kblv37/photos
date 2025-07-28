@@ -32,12 +32,13 @@ function renderPhotos(filter = '') {
   }
 
   filtered.forEach(p => {
-    const hours = p.uploadTime.getHours();
-    const minutes = p.uploadTime.getMinutes();
+    // Проверяем, была ли указана только дата без времени
+    const isoString = p.uploadTime.toISOString();
 
-    // Проверяем, задано ли время (если 00:00 → считаем, что не задано)
-    const hasTime = !(hours === 0 && minutes === 0);
+    // Если строка оканчивается на T00:00:00.000Z → считаем, что время не задано
+    const hasTime = !isoString.endsWith('T00:00:00.000Z');
 
+    const dateText = formatDate(p.uploadTime);
     const timeText = hasTime 
       ? ` ${p.uploadTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
       : '';
@@ -45,7 +46,7 @@ function renderPhotos(filter = '') {
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">${formatDate(p.uploadTime)}${timeText}</div>
+      <div class="upload-time">${dateText}${timeText}</div>
       <img src="${p.url}" alt="Фото">
     `;
     card.onclick = () => openModal(p);
