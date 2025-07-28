@@ -35,6 +35,20 @@ async function getPhotoInfo(photo) {
   }
 }
 
+function createPreview(photo, callback) {
+  const img = new Image();
+  img.src = photo.url;
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const scale = 0.25; // 25% от оригинала
+    canvas.width = img.naturalWidth * scale;
+    canvas.height = img.naturalHeight * scale;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    callback(canvas.toDataURL('image/jpeg', 0.6));
+  };
+}
+
 // Функция форматирования даты в дд.мм.гггг
 function formatDate(date) {
   const d = date.getDate().toString().padStart(2, '0');
@@ -46,10 +60,8 @@ function formatDate(date) {
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
-  // получаем информацию о фото (размер, разрешение)
   const detailedPhotos = await Promise.all(photos.map(getPhotoInfo));
 
-  // фильтрация и сортировка (новые сверху)
   const filtered = detailedPhotos
     .filter(p => {
       const dateObj = new Date(p.uploadTime);
@@ -62,8 +74,8 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  filtered.forEach(p => {
-    const dateObj = new Date(p.uploadTime);
+  filtered.forEach(photo => {
+    const dateObj = new Date(photo.uploadTime);
     const isoString = dateObj.toISOString();
     const hasTime = !isoString.endsWith('T00:00:00.000Z');
     const timeText = hasTime
@@ -71,36 +83,31 @@ async function renderPhotos(filter = '') {
       : '';
 
     let infoText = '';
-    if (p.sizeMB && p.resolution) {
-      infoText = `${p.sizeMB} MB ${p.resolution} `;
+    if (photo.sizeMB && photo.resolution) {
+      infoText = `${photo.sizeMB} MB ${photo.resolution} `;
     }
 
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    card.innerHTML = `
-      <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
-      <img 
-        src="${p.url}" 
-        srcset="${p.url} 800w" 
-        sizes="(max-width: 1200px) 70vw, (max-width: 800px) 90vw, 50vw" 
-        data-full="${p.url}" 
-        alt="Фото"
-        class="preview"
-        loading="lazy"
-      >
-    `;
+    // создаём превью через canvas
+    createPreview(photo, previewUrl => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.innerHTML = `
+        <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
+        <img src="${previewUrl}" data-full="${photo.url}" alt="Фото" class="preview" loading="lazy">
+      `;
+      const img = card.querySelector('img');
+      img.onload = () => img.classList.add('loaded');
 
-    const img = card.querySelector('img');
-    img.onload = () => img.classList.add('loaded');
-
-    card.onclick = () => openModal(p);
-    gallery.appendChild(card);
+      card.onclick = () => openModal(photo);
+      gallery.appendChild(card);
+    });
   });
 }
 
 function openModal(photo) {
+  currentPhoto = photo;
   modal.style.display = 'flex';
-  modalImg.src = ""; // очищаем
+  modalImg.src = ""; 
   modalImg.classList.remove('loaded');
 
   const fullImg = new Image();
