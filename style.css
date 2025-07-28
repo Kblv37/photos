@@ -287,3 +287,40 @@ main {
   transition: stroke-dashoffset 0.2s;
 }
 
+.skeleton {
+  position: relative;
+  background: #ddd;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  height: 100%;
+  width: 150px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.preview {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  filter: blur(15px);
+  transform: scale(1.05);
+  transition: filter 0.7s ease, transform 0.7s ease;
+}
+
+.preview.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
