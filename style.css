@@ -262,3 +262,28 @@ main {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+.progress-circle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+.progress-circle svg {
+  transform: rotate(-90deg);
+}
+
+.progress-circle circle {
+  fill: none;
+  stroke-width: 4;
+  stroke: rgba(255,255,255,0.3);
+}
+
+.progress-circle .bar {
+  stroke: #4cafef;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s;
+}
+
