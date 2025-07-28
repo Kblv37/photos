@@ -1,138 +1,187 @@
 body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f7f8fa;
+  color: #222;
 }
 
+/* Хедер */
 header {
-    background-color: #fff;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.container {
-    padding: 20px;
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #222;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: 15px;
-    margin-bottom: 20px;
-    /*grid-auto-rows: 1fr;  // Важно для выравнивания высоты, но может искажать пропорции*/
+.search-box {
+  display: flex;
+  gap: 10px;
 }
 
-.grid-item {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative; /* Для позиционирования времени загрузки */
+.search-box input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
 }
 
-.grid-item img {
-    width: 100%;
-    display: block;
-    transition: transform 0.3s ease;
-    object-fit: cover; /* Важно для корректного отображения изображений разного размера */
-    aspect-ratio: 1 / 1; /* Сохраняем пропорции сторон */
+.search-box button {
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: none;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s;
 }
 
-.grid-item:hover img {
-    transform: scale(1.05);
+.search-box button:hover {
+  background: #666;
+}
+
+/* Галерея */
+.gallery {
+  column-count: 4;
+  column-gap: 15px;
+  padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+@media(max-width: 1200px) {
+  .gallery { column-count: 3; }
+}
+@media(max-width: 800px) {
+  .gallery { column-count: 2; }
+}
+@media(max-width: 500px) {
+  .gallery { column-count: 1; }
+}
+
+.photo-card {
+  position: relative;
+  margin-bottom: 15px;
+  break-inside: avoid;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  background: #fff;
+  transition: transform .2s;
+}
+
+.photo-card:hover {
+  transform: scale(1.02);
+}
+
+.photo-card img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
 }
 
 .upload-time {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    padding: 3px 5px;
-    border-radius: 3px;
-    font-size: 0.8em;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 5px 8px;
+  font-size: 12px;
+  border-radius: 6px;
 }
 
-/* Стили для модального окна */
+/* Футер */
+footer {
+  background: #222;
+  color: #ccc;
+  text-align: center;
+  padding: 20px;
+}
+
+footer .social {
+  margin-bottom: 12px;
+}
+
+footer a {
+  color: #ccc;
+  margin: 0 10px;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+footer a:hover {
+  color: #fff;
+}
+
+/* Модальное окно */
 .modal {
-    display: none; /* Скрыто по умолчанию */
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.8);
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 2000;
 }
 
-.modal-content {
-    position: relative;
-    background-color: #fefefe;
-    margin: 5% auto; /* Центрируем */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 800px;
-    border-radius: 8px;
-    text-align: center;
+.modal img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 15px;
+  margin-bottom: 20px;
 }
 
-.modal-content img {
-    max-width: 100%;
-    max-height: 70vh;
-    display: block;
-    margin: 0 auto 20px;
+.modal button {
+  margin: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #fff;
+  color: #000;
+  transition: background .2s;
 }
 
-.close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    padding: 10px;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.download-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-}
-
-.download-button:hover {
-    background-color: #0056b3;
+.modal button:hover {
+  background: #ddd;
 }
 
 
-#load-more {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-#load-more:hover {
-    background-color: #0056b3;
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.empty-message {
+  text-align: center;
+  color: #777;
+  font-size: 18px;
+  padding: 40px;
 }
