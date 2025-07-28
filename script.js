@@ -103,12 +103,33 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // грузим слева направо
-  for (let i = 0; i < filtered.length; i++) {
-    const card = createCard(filtered[i]);
-    await loadPhoto(card);
+  // считаем количество колонок в зависимости от ширины
+  const galleryWidth = gallery.clientWidth;
+  const columnWidth = 250 + 15; // ширина карточки + gap
+  const columnCount = Math.max(1, Math.floor(galleryWidth / columnWidth));
+
+  const rows = Math.ceil(filtered.length / columnCount);
+
+  for (let row = 0; row < rows; row++) {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'photo-row';
+    rowDiv.style.display = 'flex';
+    rowDiv.style.gap = '15px';
+
+    for (let col = 0; col < columnCount; col++) {
+      const index = row * columnCount + col;
+      const photo = filtered[index];
+      if (photo) {
+        const card = createCard(photo);
+        rowDiv.appendChild(card.card);
+        await loadPhoto(card);
+      }
+    }
+
+    gallery.appendChild(rowDiv);
   }
 }
+
 
 
 function createCard(photo) {
