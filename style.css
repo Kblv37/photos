@@ -96,8 +96,8 @@ header {
 /* Галерея */
 .gallery {
   column-count: 4;  
-  column-gap: 15px;
-  padding: 10px;
+  column-gap: 8px;
+  padding: 8px;
   max-width: 1400px;
   margin: 0 auto;
 }
