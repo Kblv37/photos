@@ -22,7 +22,10 @@ function formatDate(date) {
 
 function renderPhotos(filter = '') {
   gallery.innerHTML = '';
-  const filtered = photos.filter(p => !filter || formatDate(p.uploadTime).startsWith(filter));
+
+  const filtered = photos
+    .filter(p => !filter || formatDate(p.uploadTime).startsWith(filter))
+    .sort((a, b) => b.uploadTime - a.uploadTime); // сортировка по дате, новые сверху
 
   if (filtered.length === 0) {
     gallery.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
@@ -40,7 +43,6 @@ function renderPhotos(filter = '') {
     gallery.appendChild(card);
   });
 }
-
 
 function openModal(photo) {
   modal.style.display = 'flex';
