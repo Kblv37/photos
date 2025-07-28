@@ -88,42 +88,25 @@ async function loadImageWithProgress(url, onProgress) {
 }
 
 
+
 async function renderPhotos(filter = '') {
+  console.log("Фильтр:", filter, "Всего фото:", photos.length);
+
   gallery.innerHTML = '';
 
-  const filtered = photos
-    .filter(p => {
-      const dateObj = new Date(p.uploadTime);
-      return !filter || formatDate(dateObj).startsWith(filter);
-    })
-    .sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime));
+  const filtered = photos.sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime));
 
   if (filtered.length === 0) {
     gallery.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
     return;
   }
 
-  const columnCount = window.innerWidth < 600 ? 2 : 4; // адаптив: 2 на телефоне, 4 на ПК
-  const columns = Array.from({ length: columnCount }, () => []);
+  for (let photo of filtered) {
+    const card = createCard(photo);
+    gallery.appendChild(card.card);
+    await loadPhoto(card);
+    console.log("Рендерим фото:", photo.url);
 
-  filtered.forEach((photo, i) => {
-    columns[i % columnCount].push(photo); // распределение по строкам слева направо
-  });
-
-  const rowCount = Math.max(...columns.map(c => c.length));
-  for (let r = 0; r < rowCount; r++) {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'photo-row';
-
-    for (let c = 0; c < columnCount; c++) {
-      const photo = columns[c][r];
-      if (photo) {
-        const card = createCard(photo);
-        rowDiv.appendChild(card.card);
-        await loadPhoto(card);
-      }
-    }
-    gallery.appendChild(rowDiv);
   }
 }
 
