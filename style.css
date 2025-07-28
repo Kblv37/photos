@@ -91,25 +91,24 @@ header {
   margin-bottom: 15px;
   break-inside: avoid;
   cursor: pointer;
-  overflow: hidden;
+  position: relative; /* нужно для абсолютного позиционирования вложенных элементов */
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,.15);
   background: #fff;
   transition: transform .2s;
+  overflow: hidden; /* оставляем, но теперь слои контролируем z-index */
 }
 
 .photo-card:hover {
   transform: scale(1.02);
 }
 
-/* плавное проявление фото */
 .photo-card img {
+  position: relative;
+  z-index: 1; /* фото ниже инфы */
   width: 100%;
   display: block;
   border-radius: 12px;
-  filter: blur(50px);
-  transform: scale(1.02);
-  transition: filter 0.7s ease, transform 0.7s ease;
 }
 
 .photo-card img.loaded {
