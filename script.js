@@ -180,10 +180,10 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
           const blob = await response.blob();
           const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
           infoBox.textContent =
-            `${sizeMB} MB — ${img.naturalWidth}x${img.naturalHeight} — ${formatDate(dateObj)}${timeText}`;
+            `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         } catch {
           infoBox.textContent =
-            `${img.naturalWidth}x${img.naturalHeight} — ${formatDate(dateObj)}${timeText}`;
+            `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
 
         resolve();
