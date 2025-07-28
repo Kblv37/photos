@@ -57,6 +57,7 @@ function formatDate(date) {
   return `${d}.${m}.${y}`;
 }
 
+
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
@@ -80,51 +81,52 @@ async function renderPhotos(filter = '') {
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
 
-    // создаём карточку
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
-      <img 
-        src="${photo.url}" 
-        alt="Фото" 
-        class="preview blurred" 
-        loading="lazy">
+      <img alt="Фото" class="preview blurred" loading="lazy">
     `;
 
     const img = card.querySelector('img');
     const infoBox = card.querySelector('.upload-time');
 
-    // убираем блюр после загрузки
-    img.onload = () => img.classList.add('loaded');
+    // сначала загружаем фото в память
+    const fullImg = new Image();
+    fullImg.src = photo.url;
+    fullImg.onload = async () => {
+      // создаём превью через canvas (например, 20% ширины)
+      const canvas = document.createElement('canvas');
+      const scale = 0.2;
+      canvas.width = fullImg.naturalWidth * scale;
+      canvas.height = fullImg.naturalHeight * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(fullImg, 0, 0, canvas.width, canvas.height);
 
-    // параллельно получаем размер и разрешение
-    (async () => {
-      try {
-        const response = await fetch(photo.url);
-        const blob = await response.blob();
-        const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+      // вставляем превью сразу
+      img.src = canvas.toDataURL('image/jpeg', 0.7);
 
-        const tmpImg = new Image();
-        const objectURL = URL.createObjectURL(blob);
+      // параллельно обновляем инфо
+      const response = await fetch(photo.url);
+      const blob = await response.blob();
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+      const resolution = `${fullImg.naturalWidth}x${fullImg.naturalHeight}`;
+      infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
 
-        tmpImg.onload = () => {
-          const resolution = `${tmpImg.naturalWidth}x${tmpImg.naturalHeight}`;
-          URL.revokeObjectURL(objectURL);
-
-          // добавляем инфо в начало строки
-          infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
-        };
-        tmpImg.src = objectURL;
-      } catch {
-        // молча игнорируем ошибки
-      }
-    })();
+      // потом подменяем на полное изображение
+      const hiRes = new Image();
+      hiRes.src = photo.url;
+      hiRes.onload = () => {
+        img.src = hiRes.src;
+        img.classList.add('loaded'); // убираем блюр
+      };
+    };
 
     card.onclick = () => openModal(photo);
     gallery.appendChild(card);
   });
 }
+
 
 function openModal(photo) {
   currentPhoto = photo;
