@@ -103,17 +103,13 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // создаём сразу все карточки со скелетами
-  const cards = filtered.map(photo => createCard(photo));
-
-  // загружаем первые два параллельно
-  await Promise.all([loadPhoto(cards[0]), cards[1] ? loadPhoto(cards[1]) : null]);
-
-  // остальные по одному
-  for (let i = 2; i < cards.length; i++) {
-    await loadPhoto(cards[i]);
+  // грузим слева направо
+  for (let i = 0; i < filtered.length; i++) {
+    const card = createCard(filtered[i]);
+    await loadPhoto(card);
   }
 }
+
 
 function createCard(photo) {
   const dateObj = new Date(photo.uploadTime);
