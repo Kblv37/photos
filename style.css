@@ -97,7 +97,7 @@ header {
 .gallery {
   column-count: 4;  
   column-gap: 15px;
-  padding: 20px;
+  padding: 10px;
   max-width: 1400px;
   margin: 0 auto;
 }
