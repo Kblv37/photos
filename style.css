@@ -116,6 +116,20 @@ header {
   transform: scale(1);
 }
 
+.photo-card img.preview {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  filter: blur(6px);
+  transform: scale(1.02);
+  transition: filter 0.7s ease, transform 0.7s ease;
+}
+
+.photo-card img.preview.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
 /* Инфа поверх фото */
 .upload-time {
   position: absolute;
