@@ -178,6 +178,9 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
           infoBox.textContent =
             `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
+
+        img.onclick = () => openModal(photo);
+        
         resolve();
       };
     }).catch(() => {
