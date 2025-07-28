@@ -164,9 +164,9 @@ header {
   left: 8px;
   background: rgba(0,0,0,0.5);
   color: #fff;
-  font-size: 10px;
-  padding: 4px;
-  border-radius: 5px;
+  font-size: 8px;
+  padding: 3px;
+  border-radius: 4px;
   z-index: 2;
 }
 
