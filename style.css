@@ -248,21 +248,6 @@ main {
   background: #eee; /* фон пока фото не загрузилось */
 }
 
-/* Скелетон вместо картинки */
-.skeleton {
-  width: 100%;
-  aspect-ratio: 4 / 3; /* стандартное соотношение — потом JS подменит */
-  background: linear-gradient(90deg, #eee, #ddd, #eee);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  border-radius: 12px;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 .progress-circle {
   position: absolute;
   top: 8px;
