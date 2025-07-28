@@ -104,31 +104,12 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  const columnCount = window.innerWidth < 600 ? 2 : 4; // адаптив: 2 на телефоне, 4 на ПК
-  const columns = Array.from({ length: columnCount }, () => []);
-
-  filtered.forEach((photo, i) => {
-    columns[i % columnCount].push(photo); // распределение по строкам слева направо
-  });
-
-  const rowCount = Math.max(...columns.map(c => c.length));
-  for (let r = 0; r < rowCount; r++) {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'photo-row';
-
-    for (let c = 0; c < columnCount; c++) {
-      const photo = columns[c][r];
-      if (photo) {
-        const card = createCard(photo);
-        rowDiv.appendChild(card.card);
-        await loadPhoto(card);
-      }
-    }
-    gallery.appendChild(rowDiv);
+  for (const photo of filtered) {
+    const card = createCard(photo);
+    gallery.appendChild(card.card);
+    await loadPhoto(card);
   }
 }
-
-
 
 
 
@@ -154,9 +135,6 @@ function createCard(photo) {
     </div>
   `;
 
-  gallery.appendChild(card);
-
-  // сразу вешаем клик
   card.onclick = () => openModal(photo);
 
   return { photo, card, dateObj, timeText };
