@@ -1,99 +1,93 @@
-const grid = document.querySelector('.grid');
-const loadMoreButton = document.getElementById('load-more');
-const modal = document.getElementById('modal');
-const modalImage = document.getElementById('modal-image');
-const downloadLink = document.getElementById('download-link');
-const closeButton = document.querySelector('.close');
-
-let imagesLoaded = 0;
-let allImages = [];
-const imagesPerLoad = 12;
-
-
-// Функция для форматирования даты
-function formatDate(date) {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
-}
-
-
-
-// Функция для создания элемента изображения
-function createImageElement(imageUrl, uploadTime) {
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.alt = 'Фотография';
-
-    // Время загрузки
-    const uploadTimeElement = document.createElement('span');
-    uploadTimeElement.classList.add('upload-time');
-    uploadTimeElement.textContent = formatDate(uploadTime); // Используем функцию форматирования
-    gridItem.appendChild(uploadTimeElement);
-
-
-    // Обработчик клика для открытия модального окна
-    img.addEventListener('click', () => {
-        modalImage.src = imageUrl;
-        downloadLink.href = imageUrl;
-        modal.style.display = 'block';
-    });
-
-    gridItem.appendChild(img);
-
-    return gridItem;
-}
-
-
-
-// Функция для загрузки изображений
-function loadImages(amount) {
-    const fragment = document.createDocumentFragment();
-    for (let i = imagesLoaded; i < Math.min(imagesLoaded + amount, allImages.length); i++) {
-        const image = allImages[i];
-        const gridItem = createImageElement(image.url, image.uploadTime);
-        fragment.appendChild(gridItem);
-    }
-
-    grid.appendChild(fragment);
-    imagesLoaded = Math.min(imagesLoaded + amount, allImages.length);
-
-    if (imagesLoaded === allImages.length) {
-        loadMoreButton.style.display = 'none';
-    } else {
-        loadMoreButton.style.display = 'block';
-    }
-}
-
-
-// Массив с данными об изображениях (замени своими)
-allImages = [
-    { url: 'SAM_3246.jpg', uploadTime: new Date() },
+const photos = [
+  { url: 'SAM_3246.jpg', uploadTime: new Date('2025-07-25T14:30:00') },
+  { url: 'Nature001.jpg', uploadTime: new Date('2025-06-28T09:40:00') }
 ];
 
-// Загружаем первые изображения при загрузке страницы
-loadImages(imagesPerLoad);
+const gallery = document.getElementById('gallery');
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+const downloadBtn = document.getElementById('downloadBtn');
+const closeBtn = document.getElementById('closeBtn');
+const searchDate = document.getElementById('searchDate');
+const resetBtn = document.getElementById('resetBtn');
+let currentPhoto = null;
+
+// Функция форматирования даты в дд.мм.гггг
+function formatDate(date) {
+  const d = date.getDate().toString().padStart(2, '0');
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}.${m}.${y}`;
+}
+
+function renderPhotos(filter = '') {
+  gallery.innerHTML = '';
+  const filtered = photos.filter(p => !filter || formatDate(p.uploadTime).startsWith(filter));
+
+  if (filtered.length === 0) {
+    gallery.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
+    return;
+  }
+
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.innerHTML = `
+      <div class="upload-time">${formatDate(p.uploadTime)} ${p.uploadTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+      <img src="${p.url}" alt="Фото">
+    `;
+    card.onclick = () => openModal(p);
+    gallery.appendChild(card);
+  });
+}
 
 
-// Обработчик клика на кнопку "Загрузить еще"
-loadMoreButton.addEventListener('click', () => {
-    loadImages(imagesPerLoad);
+function openModal(photo) {
+  modal.style.display = 'flex';
+  modalImg.src = photo.url;
+  currentPhoto = photo;
+}
+
+// Функция для скачивания изображения
+function downloadImage(url, filename) {
+  fetch(url, { mode: 'cors' })
+    .then(response => {
+      if (!response.ok) throw new Error('Ошибка загрузки');
+      return response.blob();
+    })
+    .then(blob => {
+      const a = document.createElement('a');
+      const objectUrl = window.URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(objectUrl);
+    })
+    .catch(error => {
+      console.error('Ошибка при скачивании:', error);
+      alert('Не удалось скачать изображение.');
+    });
+}
+
+downloadBtn.onclick = () => {
+  if (!currentPhoto) return;
+  const filename = currentPhoto.url.split('/').pop();
+  downloadImage(currentPhoto.url, filename);
+};
+
+closeBtn.onclick = () => {
+  modal.style.display = 'none';
+};
+
+searchDate.addEventListener('input', e => {
+  renderPhotos(e.target.value);
 });
 
-// Закрытие модального окна
-closeButton.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
+resetBtn.onclick = () => {
+  searchDate.value = '';
+  renderPhotos();
+};
 
-// Закрытие модального окна при клике вне модального окна
-window.addEventListener('click', (event) => {
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-});
+renderPhotos();
