@@ -102,39 +102,45 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // первые два фото параллельно
-  const firstTwo = filtered.slice(0, 2);
-  await Promise.all(firstTwo.map(photo => loadPhotoCard(photo)));
+  // создаём сразу все карточки со скелетами
+  const cards = filtered.map(photo => createCard(photo));
 
-  // остальные по очереди
-  for (let i = 2; i < filtered.length; i++) {
-    await loadPhotoCard(filtered[i]);
+  // загружаем первые два параллельно
+  await Promise.all([loadPhoto(cards[0]), cards[1] ? loadPhoto(cards[1]) : null]);
+
+  // остальные по одному
+  for (let i = 2; i < cards.length; i++) {
+    await loadPhoto(cards[i]);
   }
 }
 
-async function loadPhotoCard(photo) {
+function createCard(photo) {
+  const dateObj = new Date(photo.uploadTime);
+  const isoString = dateObj.toISOString();
+  const hasTime = !isoString.endsWith('T00:00:00.000Z');
+  const timeText = hasTime
+    ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+    : '';
+
+  const card = document.createElement('div');
+  card.className = 'photo-card';
+  card.innerHTML = `
+    <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
+    <div class="skeleton" style="aspect-ratio:4/3;"></div>
+    <div class="progress-circle">
+      <svg width="28" height="28">
+        <circle r="12" cx="14" cy="14"></circle>
+        <circle class="bar" r="12" cx="14" cy="14"></circle>
+      </svg>
+    </div>
+  `;
+  gallery.appendChild(card);
+
+  return { photo, card, dateObj, timeText };
+}
+
+async function loadPhoto({ photo, card, dateObj, timeText }) {
   return new Promise(resolve => {
-    const dateObj = new Date(photo.uploadTime);
-    const isoString = dateObj.toISOString();
-    const hasTime = !isoString.endsWith('T00:00:00.000Z');
-    const timeText = hasTime
-      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-      : '';
-
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    card.innerHTML = `
-      <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
-      <div class="skeleton" style="aspect-ratio:4/3;"></div>
-      <div class="progress-circle">
-        <svg width="28" height="28">
-          <circle r="12" cx="14" cy="14"></circle>
-          <circle class="bar" r="12" cx="14" cy="14"></circle>
-        </svg>
-      </div>
-    `;
-    gallery.appendChild(card);
-
     const infoBox = card.querySelector('.upload-time');
     const loader = card.querySelector('.bar');
     const progressCircle = card.querySelector('.progress-circle');
