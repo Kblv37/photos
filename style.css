@@ -74,6 +74,8 @@ header {
   padding: 20px;
   width: 100%;
   max-width: 1400px;
+  grid-auto-flow: dense;
+  grid-template-rows: masonry; /* 🪄 фишка для "каскадной" сетки */
 }
 
 @media(max-width: 1200px) {
