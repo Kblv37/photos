@@ -74,7 +74,7 @@ function loadImages(amount) {
 
 // Массив с данными об изображениях (замени своими)
 allImages = [
-    { url: 'https://disk.yandex.ru/i/wtg7-kcLfhKvzg', uploadTime: new Date() },
+    { url: 'SAM_3246.jpg', uploadTime: new Date() },
 ];
 
 // Загружаем первые изображения при загрузке страницы
