@@ -74,24 +74,7 @@ function loadImages(amount) {
 
 // Массив с данными об изображениях (замени своими)
 allImages = [
-    { url: 'SAM_3246.jpg', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/301x300', uploadTime: new Date(2023, 10, 20, 22, 10) }, // Пример даты
-    { url: 'https://source.unsplash.com/random/400x200', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/200x300', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/350x350', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/250x400', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/450x300', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/300x250', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/400x400', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/200x200', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/350x200', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/250x250', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/300x400', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/301x300', uploadTime: new Date(2023, 9, 15) },
-    { url: 'https://source.unsplash.com/random/400x200', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/200x300', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/350x350', uploadTime: new Date() },
-    { url: 'https://source.unsplash.com/random/250x400', uploadTime: new Date() },
+    { url: 'https://disk.yandex.ru/i/wtg7-kcLfhKvzg', uploadTime: new Date() },
 ];
 
 // Загружаем первые изображения при загрузке страницы
