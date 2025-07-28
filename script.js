@@ -75,11 +75,17 @@ async function renderPhotos(filter = '') {
     card.innerHTML = `
       <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
       <img 
-        src="${p.url.replace('.jpg', '-thumb.jpg')}" 
-        data-full="${p.url}" 
-        class="blurred"
-        alt="Фото">
+        src="${p.url}" 
+        alt="Фото"
+        class="preview"
+        loading="lazy"
+      >
     `;
+  
+    // Добавляем эффект постепенной чёткости
+    const img = card.querySelector('img');
+    img.onload = () => img.classList.add('loaded');
+  
     card.onclick = () => openModal(p);
     gallery.appendChild(card);
   });
