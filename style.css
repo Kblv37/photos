@@ -68,9 +68,9 @@ header {
 
 /* Галерея */
 .gallery {
-/*   column-count: 4;  
-  column-gap: 15px; */
-  padding: 10px;
+  column-count: 4;  
+  column-gap: 15px;
+  padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -86,7 +86,8 @@ header {
 }
 
 .photo-card {
-  position: relative;
+  display: inline-block;
+  width: 100%;
   margin-bottom: 15px;
   break-inside: avoid;
   cursor: pointer;
@@ -307,16 +308,4 @@ main {
 .preview.loaded {
   filter: blur(0);
   transform: scale(1);
-}
-
-.photo-row {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-  justify-content: center; 
-}
-
-.photo-card {
-  flex: 1 1 250px;
-  max-width: 250px;
 }
