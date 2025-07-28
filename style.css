@@ -39,7 +39,7 @@ header {
 }
 
 .login-btn {
-  height: 36px;
+  padding: 0 14px;
   font-size: 14px;
   border: none;
   border-radius: 20px;
