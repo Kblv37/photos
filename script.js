@@ -152,6 +152,7 @@ function createCard(photo) {
       </svg>
     </div>
   `;
+  gallery.appendChild(card);
 
   return { photo, card, dateObj, timeText };
 }
