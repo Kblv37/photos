@@ -102,27 +102,15 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // определяем количество колонок на основе ширины галереи
-  const columnWidth = 250; // совпадает с minmax(250px, 1fr)
-  const columnCount = Math.max(1, Math.floor(gallery.offsetWidth / columnWidth));
+  // создаём сразу все карточки со скелетами
+  const cards = filtered.map(photo => createCard(photo));
 
-  // разбиваем фото по рядам
-  for (let i = 0; i < filtered.length; i += columnCount) {
-    const row = filtered.slice(i, i + columnCount);
+  // загружаем первые два параллельно
+  await Promise.all([loadPhoto(cards[0]), cards[1] ? loadPhoto(cards[1]) : null]);
 
-    // создаём карточки для ряда
-    const rowCards = row.map(photo => createCard(photo));
-
-    // первые два в ряду загружаем параллельно
-    await Promise.all([
-      loadPhoto(rowCards[0]),
-      rowCards[1] ? loadPhoto(rowCards[1]) : null
-    ]);
-
-    // остальные в ряду по очереди
-    for (let j = 2; j < rowCards.length; j++) {
-      await loadPhoto(rowCards[j]);
-    }
+  // остальные по одному
+  for (let i = 2; i < cards.length; i++) {
+    await loadPhoto(cards[i]);
   }
 }
 
