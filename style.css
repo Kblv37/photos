@@ -82,7 +82,7 @@ header {
   .gallery { column-count: 2; }
 }
 @media(max-width: 500px) {
-  .gallery { column-count: 1; }
+  .gallery { column-count: 2; }
 }
 
 .photo-card {
