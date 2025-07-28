@@ -63,7 +63,6 @@ function formatDate(date) {
   return `${d}.${m}.${y}`;
 }
 
-
 async function loadImageWithProgress(url, onProgress) {
   const response = await fetch(url);
   if (!response.body) throw new Error("Streaming не поддерживается");
@@ -86,8 +85,6 @@ async function loadImageWithProgress(url, onProgress) {
   const blob = new Blob(chunks);
   return URL.createObjectURL(blob);
 }
-
-
 
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
@@ -116,9 +113,6 @@ async function renderPhotos(filter = '') {
     await loadPhoto(card);
   }
 }
-
-
-
 
 function createCard(photo) {
   const dateObj = new Date(photo.uploadTime);
@@ -196,8 +190,6 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
     });
   });
 }
-
-
 
 function openModal(photo) {
   currentPhoto = photo;
