@@ -67,20 +67,18 @@ async function renderPhotos(filter = '') {
     const isoString = dateObj.toISOString();
     const hasTime = !isoString.endsWith('T00:00:00.000Z');
     const timeText = hasTime
-      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
-
-    // Формируем строку информации (если данные есть)
-    let infoText = '';
-    if (p.sizeMB && p.resolution && p.sizeMB !== '—' && p.resolution !== '—') {
-      infoText = `${p.sizeMB} MB ${p.resolution} `;
-    }
-
+  
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
-      <img src="${p.url}" alt="Фото">
+      <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
+      <img 
+        src="${p.url.replace('.jpg', '-thumb.jpg')}" 
+        data-full="${p.url}" 
+        class="blurred"
+        alt="Фото">
     `;
     card.onclick = () => openModal(p);
     gallery.appendChild(card);
@@ -89,8 +87,14 @@ async function renderPhotos(filter = '') {
 
 function openModal(photo) {
   modal.style.display = 'flex';
-  modalImg.src = photo.url;
-  currentPhoto = photo;
+  modalImg.src = photo.url.replace('.jpg', '-thumb.jpg'); // сначала миниатюра
+
+  // создаём полную картинку
+  const fullImg = new Image();
+  fullImg.src = photo.url;
+  fullImg.onload = () => {
+    modalImg.src = photo.url; // заменяем на оригинал
+  };
 }
 
 // Функция для скачивания изображения
