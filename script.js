@@ -87,6 +87,7 @@ async function loadImageWithProgress(url, onProgress) {
   return URL.createObjectURL(blob);
 }
 
+
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
@@ -102,10 +103,15 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  for (const photo of filtered) {
-    const card = createCard(photo);
-    gallery.appendChild(card.card);
-    await loadPhoto(card);
+  // создаём сразу все карточки со скелетами
+  const cards = filtered.map(photo => createCard(photo));
+
+  // загружаем первые два параллельно
+  await Promise.all([loadPhoto(cards[0]), cards[1] ? loadPhoto(cards[1]) : null]);
+
+  // остальные по одному
+  for (let i = 2; i < cards.length; i++) {
+    await loadPhoto(cards[i]);
   }
 }
 
@@ -133,8 +139,6 @@ function createCard(photo) {
 
   return { photo, card, dateObj, timeText };
 }
-
-
 
 async function loadPhoto({ photo, card, dateObj, timeText }) {
   return new Promise(resolve => {
@@ -175,9 +179,6 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
           infoBox.textContent =
             `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
-
-        img.onclick = () => openModal(photo);
-        
         resolve();
       };
     }).catch(() => {
