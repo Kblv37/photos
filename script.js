@@ -85,35 +85,41 @@ async function renderPhotos(filter = '') {
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
-      <img alt="Фото" class="preview blurred" loading="lazy">
+      <div class="img-wrapper">
+        <img alt="Фото" class="preview blurred" loading="lazy">
+      </div>
     `;
 
     const img = card.querySelector('img');
+    const wrapper = card.querySelector('.img-wrapper');
     const infoBox = card.querySelector('.upload-time');
 
-    // сначала загружаем фото в память
-    const fullImg = new Image();
-    fullImg.src = photo.url;
-    fullImg.onload = async () => {
-      // создаём превью через canvas (например, 20% ширины)
+    // создаём объект картинки, чтобы узнать её размеры
+    const tempImg = new Image();
+    tempImg.src = photo.url;
+    tempImg.onload = async () => {
+      // фиксируем пропорции через aspect-ratio
+      wrapper.style.aspectRatio = `${tempImg.naturalWidth} / ${tempImg.naturalHeight}`;
+
+      // делаем уменьшенное превью
       const canvas = document.createElement('canvas');
       const scale = 0.2;
-      canvas.width = fullImg.naturalWidth * scale;
-      canvas.height = fullImg.naturalHeight * scale;
+      canvas.width = tempImg.naturalWidth * scale;
+      canvas.height = tempImg.naturalHeight * scale;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(fullImg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
 
-      // вставляем превью сразу
+      // ставим превью
       img.src = canvas.toDataURL('image/jpeg', 0.7);
 
-      // параллельно обновляем инфо
+      // получаем размер файла
       const response = await fetch(photo.url);
       const blob = await response.blob();
       const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
-      const resolution = `${fullImg.naturalWidth}x${fullImg.naturalHeight}`;
+      const resolution = `${tempImg.naturalWidth}x${tempImg.naturalHeight}`;
       infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
 
-      // потом подменяем на полное изображение
+      // грузим полное фото
       const hiRes = new Image();
       hiRes.src = photo.url;
       hiRes.onload = () => {
