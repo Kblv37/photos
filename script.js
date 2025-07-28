@@ -58,6 +58,29 @@ function formatDate(date) {
 }
 
 
+async function loadImageWithProgress(url, onProgress) {
+  const response = await fetch(url);
+  if (!response.body) throw new Error("Streaming не поддерживается");
+  
+  const contentLength = +response.headers.get("Content-Length");
+  const reader = response.body.getReader();
+  let received = 0;
+  const chunks = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    if (contentLength && onProgress) {
+      onProgress(received / contentLength);
+    }
+  }
+
+  const blob = new Blob(chunks);
+  return URL.createObjectURL(blob);
+}
+
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
@@ -84,60 +107,56 @@ async function renderPhotos(filter = '') {
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
-      <div class="skeleton"></div>
+      <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
+      <div class="skeleton" style="aspect-ratio:4/3; background:#ddd;"></div>
+      <div class="progress-circle">
+        <svg width="36" height="36">
+          <circle r="16" cx="18" cy="18"></circle>
+          <circle class="bar" r="16" cx="18" cy="18"></circle>
+        </svg>
+      </div>
     `;
-
     gallery.appendChild(card);
 
-    const skeleton = card.querySelector('.skeleton');
     const infoBox = card.querySelector('.upload-time');
+    const loader = card.querySelector('.bar');
+    const progressCircle = card.querySelector('.progress-circle');
+    const skeleton = card.querySelector('.skeleton');
 
-    // грузим изображение, чтобы узнать размеры
-    const tempImg = new Image();
-    tempImg.src = photo.url;
-    tempImg.onload = async () => {
-      const w = tempImg.naturalWidth;
-      const h = tempImg.naturalHeight;
+    // настройки круга
+    const radius = 16;
+    const circumference = 2 * Math.PI * radius;
+    loader.style.strokeDasharray = circumference;
+    loader.style.strokeDashoffset = circumference;
 
-      // подгоняем скелетон под реальные пропорции
-      skeleton.style.aspectRatio = `${w} / ${h}`;
-
-      // делаем уменьшенное превью
-      const canvas = document.createElement('canvas');
-      const scale = 0.2;
-      canvas.width = w * scale;
-      canvas.height = h * scale;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
-
-      // создаём <img> вместо скелетона
-      const img = document.createElement('img');
-      img.src = canvas.toDataURL('image/jpeg', 0.7);
+    // загружаем с прогрессом
+    loadImageWithProgress(photo.url, progress => {
+      const offset = circumference - progress * circumference;
+      loader.style.strokeDashoffset = offset;
+    }).then(objUrl => {
+      const img = new Image();
+      img.src = objUrl;
       img.alt = "Фото";
-      img.className = "preview blurred";
+      img.className = "preview loaded";
       img.loading = "lazy";
       img.dataset.full = photo.url;
 
-      skeleton.replaceWith(img);
+      img.onload = async () => {
+        skeleton.replaceWith(img);
+        progressCircle.remove();
 
-      // получаем размер файла
-      const response = await fetch(photo.url);
-      const blob = await response.blob();
-      const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
-      const resolution = `${w}x${h}`;
-      infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
-
-      // загружаем полное фото
-      const hiRes = new Image();
-      hiRes.src = photo.url;
-      hiRes.onload = () => {
-        img.src = hiRes.src;
-        img.classList.add('loaded');
+        try {
+          const response = await fetch(photo.url);
+          const blob = await response.blob();
+          const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+          infoBox.textContent = `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+        } catch {
+          infoBox.textContent = `${formatDate(dateObj)}${timeText}`;
+        }
       };
 
       card.onclick = () => openModal(photo);
-    };
+    });
   });
 }
 
