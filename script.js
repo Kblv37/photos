@@ -191,7 +191,7 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
     }).catch(() => {
       skeleton.style.background = "#999";
       progressCircle.remove();
-      infoBox.textContent = `Ошибка загрузки — ${formatDate(dateObj)}${timeText}`;
+      infoBox.textContent = `Ошибка загрузки ${formatDate(dateObj)}${timeText}`;
       resolve();
     });
   });
