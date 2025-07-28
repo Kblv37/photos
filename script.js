@@ -135,7 +135,11 @@ function createCard(photo) {
       </svg>
     </div>
   `;
+
   gallery.appendChild(card);
+
+  // сразу вешаем клик
+  card.onclick = () => openModal(photo);
 
   return { photo, card, dateObj, timeText };
 }
@@ -179,8 +183,6 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
           infoBox.textContent =
             `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
-
-        img.onclick = () => openModal(photo);
         
         resolve();
       };
