@@ -103,32 +103,30 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // считаем количество колонок в зависимости от ширины
-  const galleryWidth = gallery.clientWidth;
-  const columnWidth = 250 + 15; // ширина карточки + gap
-  const columnCount = Math.max(1, Math.floor(galleryWidth / columnWidth));
+  const columnCount = window.innerWidth < 600 ? 2 : 4; // адаптив: 2 на телефоне, 4 на ПК
+  const columns = Array.from({ length: columnCount }, () => []);
 
-  const rows = Math.ceil(filtered.length / columnCount);
+  filtered.forEach((photo, i) => {
+    columns[i % columnCount].push(photo); // распределение по строкам слева направо
+  });
 
-  for (let row = 0; row < rows; row++) {
+  const rowCount = Math.max(...columns.map(c => c.length));
+  for (let r = 0; r < rowCount; r++) {
     const rowDiv = document.createElement('div');
     rowDiv.className = 'photo-row';
-    rowDiv.style.display = 'flex';
-    rowDiv.style.gap = '15px';
 
-    for (let col = 0; col < columnCount; col++) {
-      const index = row * columnCount + col;
-      const photo = filtered[index];
+    for (let c = 0; c < columnCount; c++) {
+      const photo = columns[c][r];
       if (photo) {
         const card = createCard(photo);
         rowDiv.appendChild(card.card);
         await loadPhoto(card);
       }
     }
-
     gallery.appendChild(rowDiv);
   }
 }
+
 
 
 
