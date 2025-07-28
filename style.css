@@ -8,14 +8,16 @@ body {
 /* Хедер */
 header {
   display: flex;
+  flex-wrap: wrap; /* разрешаем перенос строк */
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px;
+  padding: 15px 20px;
   background: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,.1);
   position: sticky;
   top: 0;
   z-index: 1000;
+  gap: 10px;
 }
 
 .logo {
@@ -23,14 +25,19 @@ header {
   font-weight: bold;
   letter-spacing: 1px;
   color: #222;
+  flex: 1 1 auto; /* чтобы логотип оставался на месте */
 }
 
 .search-box {
   display: flex;
   gap: 10px;
+  flex: 1 1 250px; /* можно сжимать до 250px */
+  justify-content: flex-end;
 }
 
 .search-box input {
+  flex: 1;
+  min-width: 120px;
   padding: 8px 12px;
   border-radius: 20px;
   border: 1px solid #ccc;
@@ -184,4 +191,21 @@ main {
   color: #777;
   font-size: 18px;
   padding: 40px;
+}
+
+@media(max-width: 600px) {
+  header {
+    flex-direction: column; /* сверху вниз */
+    align-items: stretch;
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .search-box {
+    justify-content: center;
+    width: 100%;
+  }
 }
