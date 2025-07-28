@@ -67,7 +67,7 @@ header {
 /* Галерея */
 .gallery {
   column-count: 4;  
-  column-gap: 4px;
+  column-gap: 5px;
   padding: 6px;
   max-width: 1400px;
   margin: 0 auto;
