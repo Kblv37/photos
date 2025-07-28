@@ -115,7 +115,7 @@ header {
 .photo-card {
   display: inline-block;
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   break-inside: avoid;
   cursor: pointer;
   position: relative; /* нужно для абсолютного позиционирования вложенных элементов */
