@@ -18,44 +18,7 @@ const searchDate = document.getElementById('searchDate');
 const resetBtn = document.getElementById('resetBtn');
 let currentPhoto = null;
 
-// Функция получения информации о фото
-async function getPhotoInfo(photo) {
-  try {
-    const response = await fetch(photo.url);
-    const blob = await response.blob();
-    const sizeMB = (blob.size / (1024 * 1024)).toFixed(1); // округляем до 0.1 MB
-
-    const img = new Image();
-    const imgURL = URL.createObjectURL(blob);
-
-    return new Promise((resolve) => {
-      img.onload = () => {
-        const resolution = `${img.naturalWidth}x${img.naturalHeight}`;
-        URL.revokeObjectURL(imgURL);
-        resolve({ ...photo, sizeMB, resolution });
-      };
-      img.src = imgURL;
-    });
-  } catch {
-    return { ...photo, sizeMB: null, resolution: null };
-  }
-}
-
-function createPreview(photo, callback) {
-  const img = new Image();
-  img.src = photo.url;
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const scale = 0.25; // 25% от оригинала
-    canvas.width = img.naturalWidth * scale;
-    canvas.height = img.naturalHeight * scale;
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    callback(canvas.toDataURL('image/jpeg', 0.6));
-  };
-}
-
-// Функция форматирования даты в дд.мм.гггг
+// формат даты дд.мм.гггг
 function formatDate(date) {
   const d = date.getDate().toString().padStart(2, '0');
   const m = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -63,11 +26,10 @@ function formatDate(date) {
   return `${d}.${m}.${y}`;
 }
 
-
 async function loadImageWithProgress(url, onProgress) {
   const response = await fetch(url);
   if (!response.body) throw new Error("Streaming не поддерживается");
-  
+
   const contentLength = +response.headers.get("Content-Length");
   const reader = response.body.getReader();
   let received = 0;
@@ -102,33 +64,11 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  // считаем количество колонок исходя из ширины галереи
-  const galleryWidth = gallery.clientWidth;
-  const columnWidth = 250 + 15; // ширина карточки + gap
-  const columnCount = Math.max(1, Math.floor(galleryWidth / columnWidth));
-
-  // создаём массив колонок
-  const columns = Array.from({ length: columnCount }, () => []);
-
-  // распределяем фото по колонкам слева направо
-  filtered.forEach((photo, index) => {
-    columns[index % columnCount].push(photo);
-  });
-
-  // рендерим построчно
-  const rows = Math.ceil(filtered.length / columnCount);
-  for (let row = 0; row < rows; row++) {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'photo-row';
-    for (let col = 0; col < columnCount; col++) {
-      const photo = columns[col][row];
-      if (photo) {
-        const card = createCard(photo);
-        rowDiv.appendChild(card.card);
-        await loadPhoto(card);
-      }
-    }
-    gallery.appendChild(rowDiv);
+  // Загружаем фото по одному
+  for (let photo of filtered) {
+    const card = createCard(photo);
+    gallery.appendChild(card.card);
+    await loadPhoto(card);
   }
 }
 
@@ -152,12 +92,9 @@ function createCard(photo) {
       </svg>
     </div>
   `;
-  gallery.appendChild(card);
 
   return { photo, card, dateObj, timeText };
 }
-
-
 
 async function loadPhoto({ photo, card, dateObj, timeText }) {
   return new Promise(resolve => {
@@ -212,7 +149,6 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
   });
 }
 
-
 function openModal(photo) {
   currentPhoto = photo;
   modal.style.display = 'flex';
@@ -227,7 +163,6 @@ function openModal(photo) {
   };
 }
 
-// Функция для скачивания изображения
 function downloadImage(url, filename) {
   fetch(url, { mode: 'cors' })
     .then(response => {
