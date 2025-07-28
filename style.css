@@ -106,7 +106,7 @@ header {
   width: 100%;
   display: block;
   border-radius: 12px;
-  filter: blur(6px);
+  filter: blur(7px);
   transform: scale(1.02);
   transition: filter 0.7s ease, transform 0.7s ease;
 }
@@ -124,7 +124,7 @@ header {
   background: rgba(0,0,0,0.5);
   color: #fff;
   font-size: 10px;
-  padding: 5px;
+  padding: 4px;
   border-radius: 5px;
   z-index: 2;
 }
