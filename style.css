@@ -68,15 +68,14 @@ header {
 
 /* Галерея */
 .gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 15px;
   padding: 20px;
   width: 100%;
   max-width: 1400px;
-  grid-auto-flow: dense;
-  grid-template-rows: masonry; /* 🪄 фишка для "каскадной" сетки */
 }
+
 
 
 
@@ -314,3 +313,8 @@ main {
   transform: scale(1);
 }
 
+.photo-row {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-start;
+}
