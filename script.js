@@ -152,10 +152,10 @@ function createCard(photo) {
       </svg>
     </div>
   `;
-  gallery.appendChild(card);
 
   return { photo, card, dateObj, timeText };
 }
+
 
 async function loadPhoto({ photo, card, dateObj, timeText }) {
   return new Promise(resolve => {
