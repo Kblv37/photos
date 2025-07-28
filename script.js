@@ -1,5 +1,5 @@
 const photos = [
-  { url: 'SAM_3246.jpg', uploadTime: new Date('2025-07-25T14:30:00') }
+  { url: 'SAM_3246.jpg', uploadTime: new Date('2025-04-14') }
 ];
 
 const gallery = document.getElementById('gallery');
