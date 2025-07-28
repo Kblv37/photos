@@ -104,9 +104,15 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  for (const photo of filtered) {
+  // создаём все карточки со скелетами сразу
+  const cards = filtered.map(photo => {
     const card = createCard(photo);
     gallery.appendChild(card.card);
+    return card;
+  });
+
+  // загружаем фото по одному
+  for (const card of cards) {
     await loadPhoto(card);
   }
 }
@@ -125,7 +131,7 @@ function createCard(photo) {
   const card = document.createElement('div');
   card.className = 'photo-card';
   card.innerHTML = `
-    <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
+    <div class="upload-time">${formatDate(dateObj)}${timeText} — Загрузка...</div>
     <div class="skeleton" style="aspect-ratio:4/3;"></div>
     <div class="progress-circle">
       <svg width="28" height="28">
@@ -174,22 +180,23 @@ async function loadPhoto({ photo, card, dateObj, timeText }) {
           const blob = await response.blob();
           const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
           infoBox.textContent =
-            `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+            `${sizeMB} MB — ${img.naturalWidth}x${img.naturalHeight} — ${formatDate(dateObj)}${timeText}`;
         } catch {
           infoBox.textContent =
-            `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+            `${img.naturalWidth}x${img.naturalHeight} — ${formatDate(dateObj)}${timeText}`;
         }
-        
+
         resolve();
       };
     }).catch(() => {
       skeleton.style.background = "#999";
       progressCircle.remove();
-      infoBox.textContent = `Ошибка загрузки ${formatDate(dateObj)}${timeText}`;
+      infoBox.textContent = `Ошибка загрузки — ${formatDate(dateObj)}${timeText}`;
       resolve();
     });
   });
 }
+
 
 
 function openModal(photo) {
