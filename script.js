@@ -24,7 +24,7 @@ function renderPhotos(filter = '') {
 
   const filtered = photos
     .filter(p => !filter || formatDate(p.uploadTime).startsWith(filter))
-    .sort((a, b) => b.uploadTime - a.uploadTime); // сортировка по дате, новые сверху
+    .sort((a, b) => b.uploadTime - a.uploadTime);
 
   if (filtered.length === 0) {
     gallery.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
@@ -32,10 +32,20 @@ function renderPhotos(filter = '') {
   }
 
   filtered.forEach(p => {
+    const hours = p.uploadTime.getHours();
+    const minutes = p.uploadTime.getMinutes();
+
+    // Проверяем, задано ли время (если 00:00 → считаем, что не задано)
+    const hasTime = !(hours === 0 && minutes === 0);
+
+    const timeText = hasTime 
+      ? ` ${p.uploadTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+      : '';
+
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
-      <div class="upload-time">${formatDate(p.uploadTime)} ${p.uploadTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+      <div class="upload-time">${formatDate(p.uploadTime)}${timeText}</div>
       <img src="${p.url}" alt="Фото">
     `;
     card.onclick = () => openModal(p);
