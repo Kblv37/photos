@@ -43,39 +43,6 @@ function formatDate(date) {
   return `${d}.${m}.${y}`;
 }
 
-filtered.forEach(p => {
-  const dateObj = new Date(p.uploadTime);
-  const isoString = dateObj.toISOString();
-  const hasTime = !isoString.endsWith('T00:00:00.000Z');
-  const timeText = hasTime
-    ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
-    : '';
-
-  let infoText = '';
-  if (p.sizeMB && p.resolution) {
-    infoText = `${p.sizeMB} MB ${p.resolution} `;
-  }
-
-  const card = document.createElement('div');
-  card.className = 'photo-card';
-  card.innerHTML = `
-    <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
-    <img 
-      src="${p.url.replace('.jpg', '-small.jpg')}" 
-      data-full="${p.url}" 
-      alt="Фото"
-      class="preview"
-      loading="lazy"
-    >
-  `;
-
-  const img = card.querySelector('img');
-  img.onload = () => img.classList.add('loaded');
-
-  card.onclick = () => openModal(p);
-  gallery.appendChild(card);
-});
-
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
