@@ -104,12 +104,11 @@ async function renderPhotos(filter = '') {
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
 
-    // Создаём карточку
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
-      <img src="${photo.url}" alt="Фото" class="preview">
+      <div class="skeleton" style="aspect-ratio:4/3;"></div>
       <div class="progress-circle">
         <svg width="36" height="36">
           <circle r="16" cx="18" cy="18"></circle>
@@ -122,25 +121,27 @@ async function renderPhotos(filter = '') {
     const infoBox = card.querySelector('.upload-time');
     const loader = card.querySelector('.bar');
     const progressCircle = card.querySelector('.progress-circle');
-    const img = card.querySelector('img');
+    const skeleton = card.querySelector('.skeleton');
 
-    // Настройка индикатора прогресса
     const radius = 16;
     const circumference = 2 * Math.PI * radius;
     loader.style.strokeDasharray = circumference;
     loader.style.strokeDashoffset = circumference;
 
-    // Загружаем картину с прогрессом
     loadImageWithProgress(photo.url, progress => {
       const offset = circumference - progress * circumference;
       loader.style.strokeDashoffset = offset;
     }).then(objUrl => {
-      const fullImg = new Image();
-      fullImg.src = objUrl;
+      const img = new Image();
+      img.src = objUrl;
+      img.alt = "Фото";
+      img.className = "preview";
+      img.loading = "lazy";
+      img.dataset.full = photo.url;
 
-      fullImg.onload = async () => {
-        // Обновляем превью на чёткое фото
-        img.src = objUrl;
+      skeleton.replaceWith(img);
+
+      img.onload = async () => {
         img.classList.add('loaded');
         progressCircle.remove();
 
@@ -149,21 +150,22 @@ async function renderPhotos(filter = '') {
           const blob = await response.blob();
           const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
           infoBox.textContent =
-            `${sizeMB} MB ${fullImg.naturalWidth}x${fullImg.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+            `${sizeMB} MB ${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         } catch {
           infoBox.textContent =
-            `${fullImg.naturalWidth}x${fullImg.naturalHeight} ${formatDate(dateObj)}${timeText}`;
+            `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
       };
+
+      card.onclick = () => openModal(photo);
     }).catch(() => {
       progressCircle.remove();
+      skeleton.style.background = "#999";
       infoBox.textContent = `Ошибка загрузки ${formatDate(dateObj)}${timeText}`;
     });
-
-    // Открытие в модалке
-    card.onclick = () => openModal(photo);
   });
 }
+
 
 function openModal(photo) {
   currentPhoto = photo;
