@@ -85,54 +85,61 @@ async function renderPhotos(filter = '') {
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
-      <div class="img-wrapper">
-        <img alt="Фото" class="preview blurred" loading="lazy">
-      </div>
+      <div class="skeleton"></div>
     `;
 
-    const img = card.querySelector('img');
-    const wrapper = card.querySelector('.img-wrapper');
+    gallery.appendChild(card);
+
+    const skeleton = card.querySelector('.skeleton');
     const infoBox = card.querySelector('.upload-time');
 
-    // создаём объект картинки, чтобы узнать её размеры
+    // грузим изображение, чтобы узнать размеры
     const tempImg = new Image();
     tempImg.src = photo.url;
     tempImg.onload = async () => {
-      // фиксируем пропорции через aspect-ratio
-      wrapper.style.aspectRatio = `${tempImg.naturalWidth} / ${tempImg.naturalHeight}`;
+      const w = tempImg.naturalWidth;
+      const h = tempImg.naturalHeight;
+
+      // подгоняем скелетон под реальные пропорции
+      skeleton.style.aspectRatio = `${w} / ${h}`;
 
       // делаем уменьшенное превью
       const canvas = document.createElement('canvas');
       const scale = 0.2;
-      canvas.width = tempImg.naturalWidth * scale;
-      canvas.height = tempImg.naturalHeight * scale;
+      canvas.width = w * scale;
+      canvas.height = h * scale;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
 
-      // ставим превью
+      // создаём <img> вместо скелетона
+      const img = document.createElement('img');
       img.src = canvas.toDataURL('image/jpeg', 0.7);
+      img.alt = "Фото";
+      img.className = "preview blurred";
+      img.loading = "lazy";
+      img.dataset.full = photo.url;
+
+      skeleton.replaceWith(img);
 
       // получаем размер файла
       const response = await fetch(photo.url);
       const blob = await response.blob();
       const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
-      const resolution = `${tempImg.naturalWidth}x${tempImg.naturalHeight}`;
+      const resolution = `${w}x${h}`;
       infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
 
-      // грузим полное фото
+      // загружаем полное фото
       const hiRes = new Image();
       hiRes.src = photo.url;
       hiRes.onload = () => {
         img.src = hiRes.src;
-        img.classList.add('loaded'); // убираем блюр
+        img.classList.add('loaded');
       };
-    };
 
-    card.onclick = () => openModal(photo);
-    gallery.appendChild(card);
+      card.onclick = () => openModal(photo);
+    };
   });
 }
-
 
 function openModal(photo) {
   currentPhoto = photo;
