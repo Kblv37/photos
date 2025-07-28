@@ -309,7 +309,7 @@ main {
   transform: scale(1);
 }
 
-.photo-row {
+/* .photo-row {
   display: flex;
   gap: 15px;
   margin-bottom: 15px;
@@ -320,3 +320,4 @@ main {
   flex: 1 1 250px;
   max-width: 250px;
 }
+ */
