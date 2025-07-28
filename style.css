@@ -68,14 +68,11 @@ header {
 
 /* Галерея */
 .gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 15px;
+  column-count: 4; /* количество колонок на больших экранах */
+  column-gap: 15px;
   padding: 20px;
-  width: 100%;
   max-width: 1400px;
-  grid-auto-flow: dense;
-  grid-template-rows: masonry; /* 🪄 фишка для "каскадной" сетки */
+  margin: 0 auto;
 }
 
 @media(max-width: 1200px) {
