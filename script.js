@@ -157,6 +157,7 @@ function createCard(photo) {
 }
 
 
+
 async function loadPhoto({ photo, card, dateObj, timeText }) {
   return new Promise(resolve => {
     const infoBox = card.querySelector('.upload-time');
