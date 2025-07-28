@@ -68,8 +68,8 @@ header {
 
 /* Галерея */
 .gallery {
-  column-count: 4; /* количество колонок на больших экранах */
-  column-gap: 15px;
+/*   column-count: 4;  количество колонок на больших экранах */
+/*   column-gap: 15px; */
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
@@ -310,9 +310,14 @@ main {
 }
 
 .photo-row {
+  display: flex;
+  gap: 15px;
   margin-bottom: 15px;
+  justify-content: center; /* чтобы строки были по центру */
 }
+
 .photo-card {
   flex: 1;
   max-width: 250px;
 }
+
