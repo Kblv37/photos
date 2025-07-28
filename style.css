@@ -32,7 +32,7 @@ header {
   gap: 8px;
   align-items: center;
   flex: 0 1 auto;
-  max-width: 320px; /* ограничение ширины */
+  max-width: 320px;
   width: 100%;
 }
 
@@ -101,16 +101,14 @@ header {
   transform: scale(1.02);
 }
 
+/* плавное проявление фото */
 .photo-card img {
   width: 100%;
   display: block;
   border-radius: 12px;
-}
-
-.photo-card img.blurred {
-  filter: blur(8px);
-  transform: scale(1.05); /* чуть увеличиваем */
-  transition: filter 0.5s ease, transform 0.5s ease;
+  filter: blur(4px);
+  transform: scale(1.02);
+  transition: filter 0.7s ease, transform 0.7s ease;
 }
 
 .photo-card img.loaded {
@@ -118,15 +116,17 @@ header {
   transform: scale(1);
 }
 
+/* Инфа поверх фото */
 .upload-time {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
   color: #fff;
-  padding: 5px;
-  font-size: 10px;
+  font-size: 12px;
+  padding: 4px 7px;
   border-radius: 5px;
+  z-index: 2;
 }
 
 /* Футер */
@@ -188,9 +188,6 @@ footer a:hover {
   background: #ddd;
 }
 
-
-
-
 html, body {
   height: 100%;
   margin: 0;
@@ -214,7 +211,7 @@ main {
 
 @media(max-width: 600px) {
   header {
-    flex-direction: column; /* сверху вниз */
+    flex-direction: column;
     align-items: stretch;
   }
 
