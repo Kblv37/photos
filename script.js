@@ -102,12 +102,23 @@ async function renderPhotos(filter = '') {
     return;
   }
 
-  filtered.forEach(photo => {
+  // первые два фото параллельно
+  const firstTwo = filtered.slice(0, 2);
+  await Promise.all(firstTwo.map(photo => loadPhotoCard(photo)));
+
+  // остальные по очереди
+  for (let i = 2; i < filtered.length; i++) {
+    await loadPhotoCard(filtered[i]);
+  }
+}
+
+async function loadPhotoCard(photo) {
+  return new Promise(resolve => {
     const dateObj = new Date(photo.uploadTime);
     const isoString = dateObj.toISOString();
     const hasTime = !isoString.endsWith('T00:00:00.000Z');
     const timeText = hasTime
-      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
+      ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
       : '';
 
     const card = document.createElement('div');
@@ -116,9 +127,9 @@ async function renderPhotos(filter = '') {
       <div class="upload-time">Загрузка... ${formatDate(dateObj)}${timeText}</div>
       <div class="skeleton" style="aspect-ratio:4/3;"></div>
       <div class="progress-circle">
-        <svg width="36" height="36">
-          <circle r="16" cx="18" cy="18"></circle>
-          <circle class="bar" r="16" cx="18" cy="18"></circle>
+        <svg width="28" height="28">
+          <circle r="12" cx="14" cy="14"></circle>
+          <circle class="bar" r="12" cx="14" cy="14"></circle>
         </svg>
       </div>
     `;
@@ -129,7 +140,7 @@ async function renderPhotos(filter = '') {
     const progressCircle = card.querySelector('.progress-circle');
     const skeleton = card.querySelector('.skeleton');
 
-    const radius = 16;
+    const radius = 12;
     const circumference = 2 * Math.PI * radius;
     loader.style.strokeDasharray = circumference;
     loader.style.strokeDashoffset = circumference;
@@ -161,13 +172,13 @@ async function renderPhotos(filter = '') {
           infoBox.textContent =
             `${img.naturalWidth}x${img.naturalHeight} ${formatDate(dateObj)}${timeText}`;
         }
+        resolve();
       };
-
-      card.onclick = () => openModal(photo);
     }).catch(() => {
-      progressCircle.remove();
       skeleton.style.background = "#999";
+      progressCircle.remove();
       infoBox.textContent = `Ошибка загрузки ${formatDate(dateObj)}${timeText}`;
+      resolve();
     });
   });
 }
