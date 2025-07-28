@@ -60,7 +60,6 @@ function formatDate(date) {
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
-  // не ждём getPhotoInfo заранее
   const filtered = photos
     .filter(p => {
       const dateObj = new Date(p.uploadTime);
@@ -81,21 +80,46 @@ async function renderPhotos(filter = '') {
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
 
-    // карточка без ожидания инфы
+    // создаём карточку
     const card = document.createElement('div');
     card.className = 'photo-card';
     card.innerHTML = `
       <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
-      <img src="${photo.url}" data-full="${photo.url}" alt="Фото" class="preview blurred" loading="lazy">
+      <img 
+        src="${photo.url}" 
+        alt="Фото" 
+        class="preview blurred" 
+        loading="lazy">
     `;
 
     const img = card.querySelector('img');
     const infoBox = card.querySelector('.upload-time');
 
+    // убираем блюр после загрузки
     img.onload = () => img.classList.add('loaded');
 
-    // подгружаем размер/разрешение отдельно, не блокируя отображение фото
-    getPhotoInfo(photo, infoBox);
+    // параллельно получаем размер и разрешение
+    (async () => {
+      try {
+        const response = await fetch(photo.url);
+        const blob = await response.blob();
+        const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+
+        const tmpImg = new Image();
+        const objectURL = URL.createObjectURL(blob);
+
+        tmpImg.onload = () => {
+          const resolution = `${tmpImg.naturalWidth}x${tmpImg.naturalHeight}`;
+          URL.revokeObjectURL(objectURL);
+
+          // добавляем инфо в начало строки
+          infoBox.textContent = `${sizeMB} MB ${resolution} ${infoBox.textContent}`;
+        };
+        tmpImg.src = objectURL;
+      } catch {
+        // молча игнорируем ошибки
+      }
+    })();
 
     card.onclick = () => openModal(photo);
     gallery.appendChild(card);
