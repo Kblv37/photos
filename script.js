@@ -60,9 +60,8 @@ function formatDate(date) {
 async function renderPhotos(filter = '') {
   gallery.innerHTML = '';
 
-  const detailedPhotos = await Promise.all(photos.map(getPhotoInfo));
-
-  const filtered = detailedPhotos
+  // не ждём getPhotoInfo заранее
+  const filtered = photos
     .filter(p => {
       const dateObj = new Date(p.uploadTime);
       return !filter || formatDate(dateObj).startsWith(filter);
@@ -82,25 +81,24 @@ async function renderPhotos(filter = '') {
       ? ` ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`
       : '';
 
-    let infoText = '';
-    if (photo.sizeMB && photo.resolution) {
-      infoText = `${photo.sizeMB} MB ${photo.resolution} `;
-    }
+    // карточка без ожидания инфы
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.innerHTML = `
+      <div class="upload-time">${formatDate(dateObj)}${timeText}</div>
+      <img src="${photo.url}" data-full="${photo.url}" alt="Фото" class="preview blurred" loading="lazy">
+    `;
 
-    // создаём превью через canvas
-    createPreview(photo, previewUrl => {
-      const card = document.createElement('div');
-      card.className = 'photo-card';
-      card.innerHTML = `
-        <div class="upload-time">${infoText}${formatDate(dateObj)}${timeText}</div>
-        <img src="${previewUrl}" data-full="${photo.url}" alt="Фото" class="preview" loading="lazy">
-      `;
-      const img = card.querySelector('img');
-      img.onload = () => img.classList.add('loaded');
+    const img = card.querySelector('img');
+    const infoBox = card.querySelector('.upload-time');
 
-      card.onclick = () => openModal(photo);
-      gallery.appendChild(card);
-    });
+    img.onload = () => img.classList.add('loaded');
+
+    // подгружаем размер/разрешение отдельно, не блокируя отображение фото
+    getPhotoInfo(photo, infoBox);
+
+    card.onclick = () => openModal(photo);
+    gallery.appendChild(card);
   });
 }
 
