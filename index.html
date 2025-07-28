@@ -1,35 +1,43 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои Фотографии</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Галерея Джохонгира</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Мои Фотографии</h1>
-    </header>
-
-    <div class="container">
-        <div class="grid">
-            <!-- Сюда будут добавляться фотографии -->
-        </div>
+  <header>
+    <div class="logo">Jahongir Photos</div>
+    <div class="search-box">
+      <input type="text" id="searchDate" placeholder="Введите дату (дд.мм.гггг)">
+      <button id="resetBtn">Сбросить</button>
     </div>
+  </header>
 
-    <button id="load-more">Загрузить еще</button>
+  <main>
+    <div class="gallery" id="gallery"></div>
+  </main>
 
-    <!-- Модальное окно для отображения фотографии на весь экран -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <img id="modal-image" src="" alt="Большое изображение">
-            <a id="download-link" href="" download class="download-button">Скачать</a>
-        </div>
+  <footer>
+    <div class="social">
+      <a href="#">Instagram</a> | 
+      <a href="#">Telegram</a> | 
+      <a href="#">Threads</a>
     </div>
+    <p>© 2025 Jahongir</p>
+  </footer>
 
+  <!-- Модальное окно -->
+  <div class="modal" id="modal">
+    <img id="modalImg" src="" alt="">
+    <div>
+      <button id="downloadBtn">Скачать</button>
+      <button id="closeBtn">Назад</button>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
