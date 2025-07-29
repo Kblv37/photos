@@ -8,7 +8,16 @@ const photos = [
   { url: 'SAM_0002.jpg', uploadTime: new Date('2025-07-10') },
   { url: 'SAM_0003.jpg', uploadTime: new Date('2025-07-10') },
   { url: 'SAM_0004.jpg', uploadTime: new Date('2025-07-10') },
-  { url: 'SAM_0005.jpg', uploadTime: new Date('2025-07-10') }
+  { url: 'SAM_0005.jpg', uploadTime: new Date('2025-07-10') },
+  { url: 'SAM_0006.jpg', uploadTime: new Date('2024-06-21T12:43') },
+  { url: 'SAM_0007.jpg', uploadTime: new Date('2024-06-21T12:44') },
+  { url: 'SAM_0008.jpg', uploadTime: new Date('2024-06-21T12:45') },
+  { url: 'SAM_0009.jpg', uploadTime: new Date('2024-06-21T19:07') },
+  { url: 'SAM_0010.jpg', uploadTime: new Date('2024-06-21T19:10') },
+  { url: 'SAM_0011.jpg', uploadTime: new Date('2024-06-21T19:34') },
+  { url: 'SAM_0012.jpg', uploadTime: new Date('2024-08-12T18:48') }
+
+
 ];
 
 const gallery = document.getElementById('gallery');
