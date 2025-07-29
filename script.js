@@ -6,7 +6,9 @@ const photos = [
   { url: 'SAM_3304.jpg', uploadTime: new Date('2025-07-09') },
   { url: 'SAM_0001.jpg', uploadTime: new Date('2025-07-10') },
   { url: 'SAM_0002.jpg', uploadTime: new Date('2025-07-10') },
-  { url: 'SAM_0003.jpg', uploadTime: new Date('2025-07-10') }
+  { url: 'SAM_0003.jpg', uploadTime: new Date('2025-07-10') },
+  { url: 'SAM_0004.jpg', uploadTime: new Date('2025-07-10') },
+  { url: 'SAM_0005.jpg', uploadTime: new Date('2025-07-10') }
 ];
 
 const gallery = document.getElementById('gallery');
